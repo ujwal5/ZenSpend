@@ -288,4 +288,3 @@ dialog form > label > input, dialog form > label > select, dialog form > label >
   .bottom-nav { bottom: max(10px, env(safe-area-inset-bottom)); }
   .shell { padding-bottom: 105px; }
 }
-
