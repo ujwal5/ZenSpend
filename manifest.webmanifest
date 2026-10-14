@@ -1,0 +1,21 @@
+
+{
+  "id": "./",
+  "name": "ZenSpend ₹ — Personal Finance",
+  "short_name": "ZenSpend",
+  "description": "Private personal finance tracking on your device.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#101712",
+  "theme_color": "#101712",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
