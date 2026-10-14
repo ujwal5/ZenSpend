@@ -585,6 +585,84 @@ function wireEvents() {
     });
   });
 }
+
+function showView(name) {
+  document.querySelectorAll(".app-view").forEach(view => {
+    view.classList.toggle("active", view.id === `${name}-view`);
+  });
+
+  document.querySelectorAll(".nav-item").forEach(button => {
+    const active = button.dataset.view === name;
+    button.classList.toggle("active", active);
+    if (active) button.setAttribute("aria-current", "page");
+    else button.removeAttribute("aria-current");
+  });
+
+  if (name === "home") renderHomeRecent();
+  if (name === "analysis") {
+    requestAnimationFrame(() => {
+      drawFlowChart(periodTransactions());
+      drawCategoryChart(periodTransactions());
+    });
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderHomeRecent() {
+  const list = [...transactions]
+    .sort((a, b) => b.date.localeCompare(a.date) || (b.createdAt || 0) - (a.createdAt || 0))
+    .slice(0, 5);
+
+  const target = document.getElementById("homeRecent");
+  if (!target) return;
+
+  target.innerHTML = list.length ? list.map(tx => `
+    <div class="home-recent-row">
+      <span class="recent-symbol">${tx.type === "income" ? "↙" : "↗"}</span>
+      <span class="recent-description">
+        <strong>${escapeHTML(tx.description)}</strong>
+        <small>${escapeHTML(tx.category)} · ${fmtDate(tx.date)}</small>
+      </span>
+      <span class="recent-amount ${tx.type}">
+        ${tx.type === "income" ? "+" : "−"}${money(tx.amount)}
+      </span>
+    </div>
+  `).join("") : '<p class="muted">No transactions yet. Add your first income or expense.</p>';
+
+  const current = periodTransactions();
+  const income = sumType(current, "income");
+  const expense = sumType(current, "expense");
+  document.getElementById("addIncomeTotal").textContent = money(income);
+  document.getElementById("addExpenseTotal").textContent = money(expense);
+}
+
+function wireMainNavigation() {
+  document.querySelectorAll(".nav-item").forEach(button => {
+    button.addEventListener("click", () => showView(button.dataset.view));
+  });
+
+  document.querySelectorAll("[data-go]").forEach(button => {
+    button.addEventListener("click", () => showView(button.dataset.go));
+  });
+
+  document.getElementById("homeAddBtn").addEventListener("click", () => showView("add"));
+  document.getElementById("analysisAddBtn").addEventListener("click", () => showView("add"));
+
+  document.getElementById("addExpenseBtn").addEventListener("click", () => {
+    resetForm();
+    document.querySelector('input[name="txType"][value="expense"]').checked = true;
+    updateCategoryOptions();
+    document.getElementById("transactionDialog").showModal();
+  });
+
+  document.getElementById("addIncomeBtn").addEventListener("click", () => {
+    resetForm();
+    document.querySelector('input[name="txType"][value="income"]').checked = true;
+    updateCategoryOptions();
+    document.getElementById("transactionDialog").showModal();
+  });
+}
 async function init() {
   $("reportDate").value = today();
   setOptions($("categoryFilter"),[...new Set([...EXPENSE_CATEGORIES,...INCOME_CATEGORIES])],"All categories");
