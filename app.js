@@ -344,7 +344,7 @@ function renderInsights(list) {
     <span class="insight-icon">${t.icon}</span><div><strong>${escapeHTML(t.title)}</strong><p>${escapeHTML(t.text)}</p></div>
   </div>`).join("");
 }
-function renderTransactions(list) {
+function renderTransactions(list);renderHomeRecent(); {
   const query = $("searchInput").value.trim().toLowerCase();
   const type = $("typeFilter").value;
   const category = $("categoryFilter").value;
@@ -550,6 +550,7 @@ async function importBackup(file) {
   }
 }
 function wireEvents() {
+  wireMainNavigation();
   ["addBtn","addTopBtn","emptyAddBtn"].forEach(id => $(id).addEventListener("click",openAddDialog));
   document.querySelectorAll("[data-close]").forEach(button => {
     button.addEventListener("click",()=>$(button.dataset.close).close());
