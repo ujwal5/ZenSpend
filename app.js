@@ -260,12 +260,40 @@ const ZenSpend = (() => {
 
   /* ---------------- Home screen ---------------- */
 
-  function renderHome() {
-    const current = periodTransactions();
-    const income = sumType(current, "income");
-    const expense = sumType(current, "expense");
-    const net = income - expense;
-    const rate = income > 0 ? (net / income) * 100 : null;
+  
+function renderHome() {
+  const current = periodTransactions();
+
+  const income = sumType(current, "income");
+  const expense = sumType(current, "expense");
+  const net = income - expense;
+  const rate = income > 0 ? (net / income) * 100 : null;
+
+  // Calculate all-time current balance
+  const allTimeIncome = sumType(transactions, "income");
+  const allTimeExpenses = sumType(transactions, "expense");
+  const currentBalance = allTimeIncome - allTimeExpenses;
+
+  // Update summary cards
+  updateText("incomeTotal", money(income));
+  updateText("expenseTotal", money(expense));
+  updateText("netTotal", money(net));
+  updateText(
+    "savingsRate",
+    rate === null ? "—" : `${rate.toFixed(1)}%`
+  );
+
+  // Update current balance card
+  updateText("currentBalance", money(currentBalance));
+
+  const balanceElement = $("#currentBalance");
+
+  if (balanceElement) {
+    balanceElement.style.color =
+      currentBalance >= 0 ? "#b7f28b" : "#ff9c91";
+  }
+
+}
 
     updateText("todayLabel", new Date().toLocaleDateString("en-IN", {
       weekday: "long", day: "numeric", month: "long"
